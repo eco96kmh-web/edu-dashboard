@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AI 교육 3일 정리</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #070810;
+    --ink: #f5f6fa;
+    --ink-dim: rgba(245, 246, 250, 0.62);
+    --ink-faint: rgba(245, 246, 250, 0.38);
+    --line: rgba(255, 255, 255, 0.10);
+    --glass: rgba(255, 255, 255, 0.045);
+    --a1: #6366f1;
+    --a2: #22d3ee;
+    --a3: #f472b6;
+    --radius: 22px;
+    --ease: cubic-bezier(.22, 1, .36, 1);
+  }
+
+  html { -webkit-text-size-adjust: 100%; }
+
+  body {
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Pretendard",
+                 "Apple SD Gothic Neo", "Malgun Gothic", "Segoe UI", Roboto, sans-serif;
+    line-height: 1.6;
+    letter-spacing: -0.011em;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  /* Ambient gradient field */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: -20%;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(48rem 48rem at 18% 6%,  rgba(99, 102, 241, 0.30), transparent 62%),
+      radial-gradient(42rem 42rem at 88% 14%, rgba(34, 211, 238, 0.20), transparent 60%),
+      radial-gradient(46rem 46rem at 62% 96%, rgba(244, 114, 182, 0.16), transparent 62%);
+    filter: blur(12px);
+    animation: drift 26s var(--ease) infinite alternate;
+  }
+
+  @keyframes drift {
+    from { transform: translate3d(0, 0, 0) scale(1); }
+    to   { transform: translate3d(-2%, 2.5%, 0) scale(1.06); }
+  }
+
+  .shell {
+    position: relative;
+    z-index: 1;
+    width: min(1180px, 100% - 2.5rem);
+    margin-inline: auto;
+    padding: clamp(4rem, 11vw, 8.5rem) 0 clamp(4rem, 8vw, 6.5rem);
+  }
+
+  /* ── Hero ───────────────────────────── */
+  .hero { text-align: center; margin-bottom: clamp(3.5rem, 8vw, 6rem); }
+
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.42rem 1rem;
+    margin-bottom: 1.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--glass);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    animation: rise 0.9s var(--ease) both;
+  }
+
+  .eyebrow::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--a2);
+    box-shadow: 0 0 12px var(--a2);
+  }
+
+  .hero h1 {
+    font-size: clamp(2.6rem, 7.5vw, 5rem);
+    font-weight: 700;
+    line-height: 1.06;
+    letter-spacing: -0.04em;
+    background: linear-gradient(180deg, #ffffff 20%, rgba(255, 255, 255, 0.58) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: rise 0.9s var(--ease) 0.09s both;
+  }
+
+  .hero p {
+    margin-top: 1.15rem;
+    font-size: clamp(1.05rem, 2.1vw, 1.3rem);
+    font-weight: 400;
+    color: var(--ink-dim);
+    animation: rise 0.9s var(--ease) 0.18s both;
+  }
+
+  .rule {
+    width: 120px;
+    height: 1px;
+    margin: 2.5rem auto 0;
+    border: 0;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+    animation: rise 0.9s var(--ease) 0.27s both;
+  }
+
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(22px); filter: blur(6px); }
+    to   { opacity: 1; transform: none;             filter: blur(0); }
+  }
+
+  /* ── Cards ──────────────────────────── */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .card {
+    position: relative;
+    isolation: isolate;
+    padding: 2.1rem 1.9rem 2.3rem;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--glass);
+    backdrop-filter: blur(26px) saturate(150%);
+    -webkit-backdrop-filter: blur(26px) saturate(150%);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07) inset,
+                0 22px 50px -22px rgba(0, 0, 0, 0.7);
+    transition: transform 0.5s var(--ease),
+                box-shadow 0.5s var(--ease),
+                border-color 0.5s var(--ease);
+    animation: pop 0.85s var(--ease) both;
+  }
+
+  .card:nth-child(1) { --accent: var(--a1); animation-delay: 0.36s; }
+  .card:nth-child(2) { --accent: var(--a2); animation-delay: 0.46s; }
+  .card:nth-child(3) { --accent: var(--a3); animation-delay: 0.56s; }
+
+  @keyframes pop {
+    from { opacity: 0; transform: translateY(30px) scale(0.97); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* Glow halo */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(70% 55% at 50% 0%, var(--accent), transparent 70%);
+    opacity: 0;
+    filter: blur(22px);
+    transition: opacity 0.5s var(--ease);
+  }
+
+  .card:hover,
+  .card:focus-within {
+    transform: translateY(-10px) scale(1.025);
+    border-color: rgba(255, 255, 255, 0.22);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.12) inset,
+                0 34px 70px -20px rgba(0, 0, 0, 0.8);
+  }
+
+  .card:hover::before,
+  .card:focus-within::before { opacity: 0.5; }
+
+  .card__day {
+    display: inline-block;
+    padding: 0.3rem 0.72rem;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--accent) 18%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+    color: color-mix(in srgb, var(--accent) 55%, #ffffff);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+  }
+
+  .card__title {
+    margin: 1.05rem 0 1.5rem;
+    font-size: 1.6rem;
+    font-weight: 650;
+    letter-spacing: -0.025em;
+  }
+
+  .card__list { list-style: none; display: grid; gap: 0.85rem; }
+
+  .card__list li {
+    display: flex;
+    align-items: baseline;
+    gap: 0.75rem;
+    padding-bottom: 0.85rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.97rem;
+    color: var(--ink-dim);
+    transition: color 0.4s var(--ease);
+  }
+
+  .card__list li:last-child { padding-bottom: 0; border-bottom: 0; }
+
+  .card__list li::before {
+    content: "";
+    flex: none;
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translateY(-2px);
+    transition: box-shadow 0.4s var(--ease);
+  }
+
+  .card:hover .card__list li { color: var(--ink); }
+  .card:hover .card__list li::before { box-shadow: 0 0 10px var(--accent); }
+
+  /* ── Notes ──────────────────────────── */
+  .notes {
+    margin-top: clamp(3rem, 7vw, 5rem);
+    padding: clamp(2rem, 4vw, 2.9rem);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--glass);
+    backdrop-filter: blur(26px) saturate(150%);
+    -webkit-backdrop-filter: blur(26px) saturate(150%);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.07) inset;
+    animation: pop 0.85s var(--ease) 0.68s both;
+  }
+
+  .notes h2 {
+    font-size: clamp(1.25rem, 2.6vw, 1.6rem);
+    font-weight: 650;
+    letter-spacing: -0.025em;
+  }
+
+  .notes p {
+    margin-top: 0.4rem;
+    font-size: 0.9rem;
+    color: var(--ink-faint);
+  }
+
+  .notes ol {
+    list-style: none;
+    counter-reset: memo;
+    margin-top: 1.9rem;
+    display: grid;
+    gap: 1.35rem;
+  }
+
+  .notes li {
+    counter-increment: memo;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .notes li::before {
+    content: counter(memo);
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border: 1px solid var(--line);
+    border-radius: 50%;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--ink-faint);
+    transition: color 0.4s var(--ease), border-color 0.4s var(--ease);
+  }
+
+  .notes li::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.05));
+  }
+
+  .notes li:hover::before { color: var(--ink); border-color: rgba(255, 255, 255, 0.45); }
+
+  footer {
+    margin-top: clamp(3rem, 6vw, 4.5rem);
+    text-align: center;
+    font-size: 0.78rem;
+    letter-spacing: 0.05em;
+    color: var(--ink-faint);
+    animation: rise 0.9s var(--ease) 0.8s both;
+  }
+
+  @media (max-width: 560px) {
+    .card { padding: 1.75rem 1.5rem 1.9rem; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+</style>
+</head>
+<body>
+<main class="shell">
+
+  <header class="hero">
+    <span class="eyebrow">Executive Summary</span>
+    <h1>AI 교육 3일 정리</h1>
+    <p>3일 동안 배운 것</p>
+    <hr class="rule">
+  </header>
+
+  <section class="grid" aria-label="일자별 요약">
+
+    <article class="card" tabindex="0">
+      <span class="card__day">Day 1</span>
+      <h2 class="card__title">기초와 도구</h2>
+      <ul class="card__list">
+        <li>프롬프트 4요소(역할·맥락·할 일·형식)</li>
+        <li>3대 AI 도구 비교</li>
+        <li>바이브 코딩</li>
+        <li>터미널과 MCP</li>
+      </ul>
+    </article>
+
+    <article class="card" tabindex="0">
+      <span class="card__day">Day 2</span>
+      <h2 class="card__title">스킬과 에이전트</h2>
+      <ul class="card__list">
+        <li>스킬로 형식 고정</li>
+        <li>에이전트 만들기</li>
+        <li>멀티 에이전트 검토</li>
+        <li>조율 규칙(CLAUDE.md)</li>
+      </ul>
+    </article>
+
+    <article class="card" tabindex="0">
+      <span class="card__day">Day 3</span>
+      <h2 class="card__title">구축과 운영</h2>
+      <ul class="card__list">
+        <li>에이전트 구축 순서</li>
+        <li>GitHub Pages 배포</li>
+        <li>디버깅</li>
+        <li>데스크탑에서 지속 관리</li>
+      </ul>
+    </article>
+
+  </section>
+
+  <section class="notes" aria-label="현업 적용 메모">
+    <h2>현업에 적용해볼 것</h2>
+    <p>자유롭게 작성하세요.</p>
+    <ol>
+      <li></li>
+      <li></li>
+      <li></li>
+    </ol>
+  </section>
+
+  <footer>AI 교육 3일 정리 · Executive Dashboard</footer>
+
+</main>
+</body>
+</html>
